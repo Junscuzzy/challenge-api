@@ -1,12 +1,17 @@
+import bodyParser from 'body-parser'
 import compression from 'compression'
 import cors from 'cors'
 import express from 'express'
 import helmet from 'helmet'
 import logger from 'morgan'
+import passport from 'passport'
 
+import passportMiddleware from './config/passport'
 import router from './router'
 
 const app = express()
+
+// app.set('port', process.env.PORT || 3000)
 
 // ✅ Do not allow DNS prefetching
 app.use(helmet())
@@ -18,10 +23,15 @@ app.use(helmet.frameguard({ action: 'sameorigin' }))
 app.use(helmet.referrerPolicy({ policy: 'same-origin' }))
 
 // parse json request body
-app.use(express.json())
+app.use(bodyParser.json())
 
 // parse urlencoded request body into req.body
-app.use(express.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }))
+
+// Authentication
+app.use(passport.initialize())
+app.use(passport.session())
+passportMiddleware(passport)
 
 // 🚀 gzip/deflate outgoing responses
 app.use(compression())
@@ -32,8 +42,13 @@ app.use(cors())
 // 📃 Logs
 app.use(logger('dev'))
 
+// Write custom  middleware
+// app.use((req, res, next) => {
+//   // Do stuff
+// })
+
 // Routes
-app.use('/api', router)
+app.use('/api/v1', router)
 
 // 404 Not Found Middleware
 app.use((req, res, next) => {
