@@ -16,7 +16,10 @@ export const register: ControllerFn = async (req, res, next) => {
 
   const newUser = new User({
     email: req.body.email,
-    password: req.body.password
+    password: req.body.password,
+    profile: {
+      name: req.body?.profile?.name || ''
+    }
   })
 
   addUser(newUser, (err, user) => {

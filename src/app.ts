@@ -11,8 +11,6 @@ import router from './router'
 
 const app = express()
 
-// app.set('port', process.env.PORT || 3000)
-
 // ✅ Do not allow DNS prefetching
 app.use(helmet())
 
